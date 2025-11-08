@@ -61,11 +61,17 @@ class Log {
     endStatus status;
     string timestamp;
     vector<LogEntry> entries;
+    // час початку та к≥нц€
+	
 
 public:
+    chrono::time_point<chrono::system_clock> startTime;
+    chrono::time_point<chrono::system_clock> endTime;
+
     Log(int id, LogLevel level, const string& name)
         : id(id), level(level), name(name), status(NOT_FINISHED)
     {
+		startTime = chrono::system_clock::now();
         timestamp = getTimestamp();
     }
 
@@ -183,6 +189,13 @@ public:
         for (auto& l : logs) {
             if (l.getId() == logId) {
                 l.setStatus(status);
+				l.endTime = chrono::system_clock::now();
+                // ƒодати р€док про тривал≥сть
+                chrono::duration<double> duration = l.endTime - l.startTime;
+                ostringstream oss;
+                oss << duration.count() << " seconds";
+                l.pushBackMsg("Duration", oss.str(), true);
+                // ================
                 if (comment != "#") l.pushBackMsg("Comment", comment, false);
                 logQueue.push(l);
                 cv.notify_one();
