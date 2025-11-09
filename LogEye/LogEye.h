@@ -282,4 +282,4 @@ private:
     }
 };
 
-LogEye logEye;
+extern LogEye logEye;
